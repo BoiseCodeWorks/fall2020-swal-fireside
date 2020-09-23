@@ -1,7 +1,8 @@
 <template>
   <main id="cars" class="container-fluid">
     <div class="row my-3">
-      <button class="btn btn-success" @click="showForm = true" v-if="!showForm">Add Car</button>
+      <button class="btn btn-success" @click="createCarForm">Add Car</button>
+
       <div class="col" id="form">
         <form @submit.prevent="createCar" class="form-inline" v-if="showForm">
           <div class="form-group p-1">
@@ -84,54 +85,60 @@
 </template>
 
 <script>
-import Car from "../components/Car.vue"
+import ns from "../services/NotificationService";
+import Car from "../components/Car.vue";
 export default {
   name: "Cars",
   mounted() {
-    this.$store.dispatch('getAllCars')
+    this.$store.dispatch("getAllCars");
   },
   data() {
     return {
       showForm: false,
-      newCar: {}
-    }
+      newCar: {},
+    };
   },
   computed: {
     cars() {
-      return this.$store.state.cars
-    }
+      return this.$store.state.cars;
+    },
   },
   methods: {
     createCar() {
-      this.$store.dispatch("createCar", this.newCar)
+      this.$store.dispatch("createCar", this.newCar);
       // PROTIP the object retains reference so we cant just reset it we will need to reset the form instead
       for (let key in this.newCar) {
-        this.newCar[key] = null
+        this.newCar[key] = null;
       }
       this.showForm = false;
-
     },
     clearForm() {
       this.showForm = false;
-      this.newCar = {}
-    }
+      this.newCar = {};
+    },
+    async createCarForm() {
+      let data = await ns.inputData();
+      console.log(data);
+    },
   },
   beforeRouteLeave(to, from, next) {
     if (!this.showForm) {
-      next()
-      return
+      next();
+      return;
     }
-    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+    const answer = window.confirm(
+      "Do you really want to leave? you have unsaved changes!"
+    );
     if (answer) {
-      next()
+      next();
     } else {
-      next(false)
+      next(false);
     }
   },
   components: {
-    Car
-  }
-}
+    Car,
+  },
+};
 </script>
 
 <style>
